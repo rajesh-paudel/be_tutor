@@ -63,12 +63,10 @@ export const verifyTeacherProfile = async (req, res) => {
     const { status } = req.body; // Expects 'approved' or 'rejected'
 
     if (!["approved", "rejected"].includes(status)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "Invalid verification transition requested.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "Invalid verification transition requested.",
+      });
     }
 
     const updatedProfile = await TeacherProfile.findByIdAndUpdate(
@@ -78,12 +76,10 @@ export const verifyTeacherProfile = async (req, res) => {
     ).populate("userId", "name email");
 
     if (!updatedProfile) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          error: "Target teacher profile record not found.",
-        });
+      return res.status(404).json({
+        success: false,
+        error: "Target teacher profile record not found.",
+      });
     }
 
     return res.status(200).json({
@@ -105,24 +101,20 @@ export const toggleUserSuspension = async (req, res) => {
     const { isSuspended } = req.body; // Expects true or false boolean
 
     if (typeof isSuspended !== "boolean") {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error:
-            "Suspension configuration toggle parameter must be a boolean value.",
-        });
+      return res.status(400).json({
+        success: false,
+        error:
+          "Suspension configuration toggle parameter must be a boolean value.",
+      });
     }
 
     // Prevent administrators from accidentally locking themselves out of the framework management console
     if (targetUserId === req.user._id.toString()) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error:
-            "Administrative safety fault. You cannot lock out your own supervisor profile.",
-        });
+      return res.status(400).json({
+        success: false,
+        error:
+          "Administrative safety fault. You cannot lock out your own supervisor profile.",
+      });
     }
 
     const user = await User.findByIdAndUpdate(
@@ -132,12 +124,10 @@ export const toggleUserSuspension = async (req, res) => {
     ).select("-passwordHash");
 
     if (!user) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          error: "Target user account profile file layer missing.",
-        });
+      return res.status(404).json({
+        success: false,
+        error: "Target user account profile file layer missing.",
+      });
     }
 
     const resolutionMessage = isSuspended

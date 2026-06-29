@@ -1,11 +1,11 @@
 import express from "express";
+
+import { verifyTokenAndRole } from "../middleware/auth.js";
 import {
   createBooking,
   updateBookingStatus,
   getUserBookings,
-} from "../controllers/bookingController.js";
-import { verifyTokenAndRole } from "../middleware/auth.js";
-
+} from "../controller/bookingController.js";
 const router = express.Router();
 
 // 1. Fetch user-specific lists (Accessible by authenticated Students and Teachers)

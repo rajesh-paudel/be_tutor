@@ -1,9 +1,10 @@
 import express from "express";
+
 import {
   createQuiz,
   submitQuizAttempt,
   getQuizzes,
-} from "../controllers/quizController.js";
+} from "../controller/quizController.js";
 import { verifyTokenAndRole } from "../middleware/auth.js";
 
 const router = express.Router();

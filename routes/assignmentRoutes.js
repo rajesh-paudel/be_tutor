@@ -1,10 +1,11 @@
 import express from "express";
+
 import {
   createAssignment,
   submitAssignment,
-  gradeSubmission,
   getAssignments,
-} from "../controllers/assignmentController.js";
+  gradeSubmission,
+} from "../controller/assignmentController.js";
 import { verifyTokenAndRole } from "../middleware/auth.js";
 
 const router = express.Router();

@@ -42,12 +42,10 @@ export const submitAssignment = async (req, res) => {
     const { fileUrl } = req.body; // URL to completed work file/document
 
     if (!fileUrl) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "Please provide a file URL for your submission.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "Please provide a file URL for your submission.",
+      });
     }
 
     const assignment = await Assignment.findById(assignmentId);
@@ -59,12 +57,10 @@ export const submitAssignment = async (req, res) => {
 
     // Check if deadline has already passed
     if (new Date() > new Date(assignment.dueDate)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "The deadline for this assignment has expired.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "The deadline for this assignment has expired.",
+      });
     }
 
     // Check if student has already submitted to avoid duplicates
@@ -73,12 +69,10 @@ export const submitAssignment = async (req, res) => {
     );
 
     if (alreadySubmitted) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "You have already submitted a solution for this task.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "You have already submitted a solution for this task.",
+      });
     }
 
     // Append submission object to sub-document array layout safely
@@ -120,12 +114,10 @@ export const gradeSubmission = async (req, res) => {
       teacherId,
     });
     if (!assignment) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          error: "Assignment not found or unauthorized access.",
-        });
+      return res.status(404).json({
+        success: false,
+        error: "Assignment not found or unauthorized access.",
+      });
     }
 
     // Locate individual target submission within embedded list array
@@ -134,12 +126,10 @@ export const gradeSubmission = async (req, res) => {
     );
 
     if (!submission) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          error: "No submission found for the specified student.",
-        });
+      return res.status(404).json({
+        success: false,
+        error: "No submission found for the specified student.",
+      });
     }
 
     // Update individual schema sub-document fields

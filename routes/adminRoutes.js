@@ -1,9 +1,10 @@
 import express from "express";
+
 import {
   getPlatformStats,
   verifyTeacherProfile,
   toggleUserSuspension,
-} from "../controllers/adminController.js";
+} from "../controller/adminController.js";
 import { verifyTokenAndRole } from "../middleware/auth.js";
 
 const router = express.Router();

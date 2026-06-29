@@ -9,12 +9,10 @@ export const createQuiz = async (req, res) => {
     const { title, subject, questions, isGeneratedByAI } = req.body;
 
     if (!title || !subject || !questions || !Array.isArray(questions)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "Missing core quiz validation properties.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "Missing core quiz validation properties.",
+      });
     }
 
     const newQuiz = await Quiz.create({

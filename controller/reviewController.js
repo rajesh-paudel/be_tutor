@@ -11,23 +11,19 @@ export const createReview = async (req, res) => {
 
     // 1. Structural Verification
     if (!teacherId || !rating || !comment) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "Missing mandatory review processing elements.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "Missing mandatory review processing elements.",
+      });
     }
 
     const numericalRating = Number(rating);
     if (numericalRating < 1 || numericalRating > 5) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error:
-            "Rating parameter value boundary must fall precisely between 1 and 5.",
-        });
+      return res.status(400).json({
+        success: false,
+        error:
+          "Rating parameter value boundary must fall precisely between 1 and 5.",
+      });
     }
 
     // 2. Academic Verification (Optional but highly recommended for defenses)
@@ -49,13 +45,11 @@ export const createReview = async (req, res) => {
     // 3. Collision Check: Prevent duplicate reviews for the same teacher
     const duplicateReview = await Review.findOne({ studentId, teacherId });
     if (duplicateReview) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error:
-            "You have already submitted a platform evaluation review for this instructor.",
-        });
+      return res.status(400).json({
+        success: false,
+        error:
+          "You have already submitted a platform evaluation review for this instructor.",
+      });
     }
 
     // 4. Persistence Layout Generation

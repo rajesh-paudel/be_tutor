@@ -60,12 +60,10 @@ export const updateTeacherProfile = async (req, res) => {
     ).populate("userId", "name email profileImage");
 
     if (!updatedProfile) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          error: "Teacher profile profile record not found.",
-        });
+      return res.status(404).json({
+        success: false,
+        error: "Teacher profile profile record not found.",
+      });
     }
 
     return res.status(200).json({

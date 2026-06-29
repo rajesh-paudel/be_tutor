@@ -1,7 +1,7 @@
 import express from "express";
-import { solveHomeworkDoubt } from "../controllers/aiController.js";
-import { verifyTokenAndRole } from "../middleware/auth.js";
 
+import { verifyTokenAndRole } from "../middleware/auth.js";
+import { solveHomeworkDoubt } from "../controller/aiController.js";
 const router = express.Router();
 
 // Route mapping configuration protected for Student users

@@ -1,9 +1,10 @@
 import express from "express";
+
 import {
   getMyProfile,
-  updateTeacherProfile,
   updateStudentProfile,
-} from "../controllers/profileController.js";
+  updateTeacherProfile,
+} from "../controller/profileController.js";
 import { verifyTokenAndRole } from "../middleware/auth.js";
 
 const router = express.Router();

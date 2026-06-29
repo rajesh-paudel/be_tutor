@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import User from "@/models/User";
-import dbConnect from "@/lib/dbConnect";
+import User from "../models/User.js";
+import dbConnect from "../lib/dbConnect.js";
 
 export const verifyTokenAndRole = (allowedRoles = []) => {
   return async (req, res, next) => {
@@ -29,35 +29,29 @@ export const verifyTokenAndRole = (allowedRoles = []) => {
       }
 
       if (user.isSuspended) {
-        return res
-          .status(403)
-          .json({
-            success: false,
-            error: "This account has been suspended by an administrator.",
-          });
+        return res.status(403).json({
+          success: false,
+          error: "This account has been suspended by an administrator.",
+        });
       }
 
       // 4. Role Authorization Check
       // If allowedRoles array is empty, any valid authenticated user can pass
       if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-        return res
-          .status(403)
-          .json({
-            success: false,
-            error: "Unauthorized. Forbidden resource access.",
-          });
+        return res.status(403).json({
+          success: false,
+          error: "Unauthorized. Forbidden resource access.",
+        });
       }
 
       // Attach user details to request object for downstream controllers
       req.user = user;
       next();
     } catch (error) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          error: "Invalid or expired authentication token.",
-        });
+      return res.status(401).json({
+        success: false,
+        error: "Invalid or expired authentication token.",
+      });
     }
   };
 };

@@ -1,8 +1,9 @@
 import express from "express";
+
 import {
   createReview,
   getTeacherReviews,
-} from "../controllers/reviewController.js";
+} from "../controller/reviewController.js";
 import { verifyTokenAndRole } from "../middleware/auth.js";
 
 const router = express.Router();

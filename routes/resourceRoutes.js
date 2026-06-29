@@ -1,10 +1,10 @@
 import express from "express";
+
+import { verifyTokenAndRole } from "../middleware/auth.js";
 import {
   uploadResource,
   getResources,
-} from "../controllers/resourceController.js";
-import { verifyTokenAndRole } from "../middleware/auth.js";
-
+} from "../controller/resourceController.js";
 const router = express.Router();
 
 // 1. Fetch available material items (Any authenticated student or teacher can read notes)

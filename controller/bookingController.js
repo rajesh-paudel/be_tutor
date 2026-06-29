@@ -11,32 +11,26 @@ export const createBooking = async (req, res) => {
 
     // 1. Structural Validation
     if (!teacherId || !date || !startTime || !endTime) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "Missing mandatory schedule reservation variables.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "Missing mandatory schedule reservation variables.",
+      });
     }
 
     // 2. Format validation check (ensure 24h format "HH:MM")
     const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
     if (!timeRegex.test(startTime) || !timeRegex.test(endTime)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "Invalid time string format. Use HH:MM format.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "Invalid time string format. Use HH:MM format.",
+      });
     }
 
     if (startTime >= endTime) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "Start time cannot be equal to or greater than end time.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "Start time cannot be equal to or greater than end time.",
+      });
     }
 
     // 3. SLOTS CONFLICT DETECTION ALGORITHM
@@ -89,12 +83,10 @@ export const updateBookingStatus = async (req, res) => {
     const { status } = req.body; // Expects 'accepted' or 'rejected'
 
     if (!["accepted", "rejected"].includes(status)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "Invalid workflow status update requested.",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "Invalid workflow status update requested.",
+      });
     }
 
     // Fetch the target booking
@@ -107,12 +99,10 @@ export const updateBookingStatus = async (req, res) => {
 
     // Authorization verification
     if (booking.teacherId.toString() !== teacherId.toString()) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          error: "Access denied. You do not manage this schedule.",
-        });
+      return res.status(403).json({
+        success: false,
+        error: "Access denied. You do not manage this schedule.",
+      });
     }
 
     // If accepting, run a secondary safety check to ensure no other booking was accepted in parallel
@@ -129,13 +119,11 @@ export const updateBookingStatus = async (req, res) => {
       });
 
       if (activeConflict) {
-        return res
-          .status(400)
-          .json({
-            success: false,
-            error:
-              "Cannot accept. Parallel slot conflict has already been confirmed.",
-          });
+        return res.status(400).json({
+          success: false,
+          error:
+            "Cannot accept. Parallel slot conflict has already been confirmed.",
+        });
       }
     }
 

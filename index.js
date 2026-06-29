@@ -1,6 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+
+dotenv.config();
+
 import dbConnect from "./lib/dbConnect.js";
 import authRoutes from "./routes/authRoutes.js";
 import profileRoutes from "./routes/profileRoutes.js";
@@ -12,8 +15,6 @@ import assignmentRoutes from "./routes/assignmentRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-// Initialize configuration
-dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
