@@ -56,7 +56,7 @@ export const updateTeacherProfile = async (req, res) => {
     const updatedProfile = await TeacherProfile.findOneAndUpdate(
       { userId },
       { $set: updateFields },
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     ).populate("userId", "name email profileImage");
 
     if (!updatedProfile) {
@@ -88,7 +88,7 @@ export const updateStudentProfile = async (req, res) => {
     const updatedProfile = await StudentProfile.findOneAndUpdate(
       { userId },
       { $set: updateFields },
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     ).populate("userId", "name email profileImage");
 
     if (!updatedProfile) {

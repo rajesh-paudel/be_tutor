@@ -72,7 +72,7 @@ export const verifyTeacherProfile = async (req, res) => {
     const updatedProfile = await TeacherProfile.findByIdAndUpdate(
       profileId,
       { $set: { verificationStatus: status } },
-      { new: true, runValidators: true },
+      { returnDocument: "after", runValidators: true },
     ).populate("userId", "name email");
 
     if (!updatedProfile) {
@@ -120,7 +120,7 @@ export const toggleUserSuspension = async (req, res) => {
     const user = await User.findByIdAndUpdate(
       targetUserId,
       { $set: { isSuspended } },
-      { new: true },
+      { returnDocument: "after" },
     ).select("-passwordHash");
 
     if (!user) {
