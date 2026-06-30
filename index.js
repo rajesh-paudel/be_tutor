@@ -22,7 +22,12 @@ const PORT = process.env.PORT || 5000;
 dbConnect();
 
 // Global Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://fe-tutor-rho.vercel.app/",
+    credentials: true,
+  }),
+);
 app.use(express.json());
 
 // Bind API Application Routes
