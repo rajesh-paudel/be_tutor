@@ -24,7 +24,7 @@ dbConnect();
 // Global Middleware
 app.use(
   cors({
-    origin: "https://fe-tutor-rho.vercel.app/",
+    origin: "https://fe-tutor-rho.vercel.app",
     credentials: true,
   }),
 );
