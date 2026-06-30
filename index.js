@@ -26,7 +26,10 @@ app.use(
   }),
 );
 app.use(express.json());
-
+app.use(async (req, res, next) => {
+  await dbConnect();
+  next();
+});
 // Bind API Application Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
@@ -43,17 +46,6 @@ app.get("/", (req, res) => {
   res.send("Tutor Application API is up and running.");
 });
 
-async function startServer() {
-  try {
-    await dbConnect();
-
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  } catch (err) {
-    console.error("Failed to start server:", err);
-    process.exit(1);
-  }
-}
-
-startServer();
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
