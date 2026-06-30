@@ -18,9 +18,6 @@ import adminRoutes from "./routes/adminRoutes.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connect to Database
-dbConnect();
-
 // Global Middleware
 app.use(
   cors({
@@ -46,6 +43,17 @@ app.get("/", (req, res) => {
   res.send("Tutor Application API is up and running.");
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running smoothly on port ${PORT}`);
-});
+async function startServer() {
+  try {
+    await dbConnect();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (err) {
+    console.error("Failed to start server:", err);
+    process.exit(1);
+  }
+}
+
+startServer();
