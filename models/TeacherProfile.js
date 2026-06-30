@@ -8,6 +8,7 @@ const TeacherProfileSchema = new mongoose.Schema({
     unique: true,
   },
   subjects: [{ type: String, required: true, index: true }],
+  teachingLevels: [{ type: String, index: true }],
   hourlyRate: { type: Number, required: true },
   experienceYears: { type: Number, required: true },
   bio: { type: String, required: true },

@@ -14,6 +14,8 @@ const BookingSchema = new mongoose.Schema({
   date: { type: String, required: true, index: true }, // YYYY-MM-DD
   startTime: { type: String, required: true }, // "14:00"
   endTime: { type: String, required: true }, // "15:00"
+  subject: { type: String, default: "" },
+  note: { type: String, default: "" },
   meetingLink: { type: String, default: "" }, // Virtual classroom destination
   status: {
     type: String,

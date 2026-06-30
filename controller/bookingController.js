@@ -7,7 +7,7 @@ import TeacherProfile from "../models/TeacherProfile.js";
 export const createBooking = async (req, res) => {
   try {
     const studentId = req.user._id;
-    const { teacherId, date, startTime, endTime } = req.body;
+    const { teacherId, date, startTime, endTime, subject, note } = req.body;
 
     // 1. Structural Validation
     if (!teacherId || !date || !startTime || !endTime) {
@@ -60,6 +60,8 @@ export const createBooking = async (req, res) => {
       date,
       startTime,
       endTime,
+      subject,
+      note,
       meetingLink: `https://meet.jit.si/${teacherId}-${date}-${startTime.replace(":", "")}`, // Generates a reliable demo classroom link
     });
 
@@ -80,9 +82,9 @@ export const updateBookingStatus = async (req, res) => {
   try {
     const teacherId = req.user._id;
     const bookingId = req.params.id;
-    const { status } = req.body; // Expects 'accepted' or 'rejected'
+    const { status } = req.body; // Expects 'accepted', 'rejected', or 'completed'
 
-    if (!["accepted", "rejected"].includes(status)) {
+    if (!["accepted", "rejected", "completed"].includes(status)) {
       return res.status(400).json({
         success: false,
         error: "Invalid workflow status update requested.",
@@ -102,6 +104,13 @@ export const updateBookingStatus = async (req, res) => {
       return res.status(403).json({
         success: false,
         error: "Access denied. You do not manage this schedule.",
+      });
+    }
+
+    if (status === "completed" && booking.status !== "accepted") {
+      return res.status(400).json({
+        success: false,
+        error: "Only accepted bookings can be marked as completed.",
       });
     }
 

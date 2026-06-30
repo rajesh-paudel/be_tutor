@@ -37,15 +37,68 @@ export const getMyProfile = async (req, res) => {
   }
 };
 
+export const getPublicProfile = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).select(
+      "name profileImage role isSuspended",
+    );
+
+    if (!user || user.isSuspended) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Profile not found." });
+    }
+
+    let profileData = null;
+
+    if (user.role === "teacher") {
+      profileData = await TeacherProfile.findOne({ userId }).populate(
+        "userId",
+        "name profileImage role",
+      );
+    } else if (user.role === "student") {
+      profileData = await StudentProfile.findOne({ userId }).populate(
+        "userId",
+        "name profileImage role",
+      );
+    } else {
+      return res
+        .status(404)
+        .json({ success: false, error: "Profile not found." });
+    }
+
+    if (!profileData) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Profile not found." });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, role: user.role, data: profileData });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
 export const updateTeacherProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { subjects, hourlyRate, experienceYears, bio, weeklyAvailability } =
-      req.body;
+    const {
+      subjects,
+      teachingLevels,
+      hourlyRate,
+      experienceYears,
+      bio,
+      weeklyAvailability,
+    } = req.body;
 
     // Build update object dynamically
     const updateFields = {};
     if (subjects !== undefined) updateFields.subjects = subjects;
+    if (teachingLevels !== undefined)
+      updateFields.teachingLevels = teachingLevels;
     if (hourlyRate !== undefined) updateFields.hourlyRate = Number(hourlyRate);
     if (experienceYears !== undefined)
       updateFields.experienceYears = Number(experienceYears);
