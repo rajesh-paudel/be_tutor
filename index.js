@@ -15,13 +15,15 @@ import assignmentRoutes from "./routes/assignmentRoutes.js";
 import quizRoutes from "./routes/quizRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import { initSocket } from "./sockets/chat.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Global Middleware
 app.use(
   cors({
-    origin: "https://fe-tutor-rho.vercel.app",
+    origin: ["https://fe-tutor-rho.vercel.app", "http://localhost:3000"],
     credentials: true,
   }),
 );
@@ -39,11 +41,14 @@ app.use("/api/assignments", assignmentRoutes);
 app.use("/api/quizzes", quizRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/chat", chatRoutes);
 // Base Route Health Check
 app.get("/", (req, res) => {
   res.send("Tutor Application API is up and running.");
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+initSocket(server, app);

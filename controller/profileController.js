@@ -1,6 +1,11 @@
 import TeacherProfile from "../models/TeacherProfile.js";
 import StudentProfile from "../models/StudentProfile.js";
 import User from "../models/User.js";
+import {
+  deleteFromCloudinary,
+  extractCloudinaryPublicId,
+  uploadToCloudinary,
+} from "../utils/cloudinary.js";
 
 export const getMyProfile = async (req, res) => {
   try {
@@ -154,6 +159,72 @@ export const updateStudentProfile = async (req, res) => {
       success: true,
       message: "Student profile updated successfully.",
       data: updatedProfile,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const updateProfileImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ success: false, error: "No image file provided." });
+    }
+
+    const userId = req.user._id;
+    const currentUser = await User.findById(userId);
+
+    if (!currentUser) {
+      return res.status(404).json({ success: false, error: "User not found." });
+    }
+
+    if (currentUser.profileImage) {
+      const publicId = extractCloudinaryPublicId(currentUser.profileImage);
+      if (publicId) {
+        await deleteFromCloudinary(publicId);
+      }
+    }
+
+    const uploadedImage = await uploadToCloudinary(req.file);
+
+    currentUser.profileImage = uploadedImage.secure_url;
+    await currentUser.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile image updated successfully.",
+      data: { profileImage: currentUser.profileImage },
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const removeProfileImage = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const currentUser = await User.findById(userId);
+
+    if (!currentUser) {
+      return res.status(404).json({ success: false, error: "User not found." });
+    }
+
+    if (currentUser.profileImage) {
+      const publicId = extractCloudinaryPublicId(currentUser.profileImage);
+      if (publicId) {
+        await deleteFromCloudinary(publicId);
+      }
+    }
+
+    currentUser.profileImage = "";
+    await currentUser.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile image removed successfully.",
+      data: { profileImage: currentUser.profileImage },
     });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
