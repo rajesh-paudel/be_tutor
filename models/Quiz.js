@@ -27,6 +27,11 @@ const QuizSchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
+  assignedStudentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
+  },
   title: { type: String, required: true },
   subject: { type: String, required: true },
   isGeneratedByAI: { type: Boolean, default: false },

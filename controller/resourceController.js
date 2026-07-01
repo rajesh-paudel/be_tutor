@@ -55,6 +55,7 @@ export const uploadResource = async (req, res) => {
     // 4. Persistence into MongoDB Collection Layer
     const resource = await Resource.create({
       teacherId,
+      assignedStudentId: req.body.assignedStudentId || null,
       title,
       description: description || "",
       subject,
@@ -78,6 +79,8 @@ export const uploadResource = async (req, res) => {
 // @access  Private (Authenticated Users)
 export const getResources = async (req, res) => {
   try {
+    const userId = req.user._id;
+    const role = req.user.role;
     const { subject } = req.query;
     const filter = {};
 
@@ -85,9 +88,25 @@ export const getResources = async (req, res) => {
       filter.subject = { $regex: new RegExp(subject, "i") };
     }
 
-    const resources = await Resource.find(filter)
-      .populate("teacherId", "name profileImage")
-      .sort({ createdAt: -1 });
+    let resources;
+
+    if (role === "teacher") {
+      resources = await Resource.find({
+        teacherId: userId,
+        ...filter,
+      })
+        .populate("teacherId", "name profileImage")
+        .populate("assignedStudentId", "name profileImage")
+        .sort({ createdAt: -1 });
+    } else {
+      resources = await Resource.find({
+        ...filter,
+        $or: [{ assignedStudentId: null }, { assignedStudentId: userId }],
+      })
+        .populate("teacherId", "name profileImage")
+        .populate("assignedStudentId", "name profileImage")
+        .sort({ createdAt: -1 });
+    }
 
     return res.status(200).json({
       success: true,

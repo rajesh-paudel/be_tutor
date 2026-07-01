@@ -17,6 +17,7 @@ export const createQuiz = async (req, res) => {
 
     const newQuiz = await Quiz.create({
       teacherId,
+      assignedStudentId: req.body.assignedStudentId || null,
       title,
       subject,
       questions,
@@ -109,6 +110,8 @@ export const submitQuizAttempt = async (req, res) => {
 // @access  Private (Authenticated Users)
 export const getQuizzes = async (req, res) => {
   try {
+    const userId = req.user._id;
+    const role = req.user.role;
     const { subject, difficulty } = req.query;
     const matchCriteria = {};
 
@@ -121,9 +124,24 @@ export const getQuizzes = async (req, res) => {
       matchCriteria["questions.difficulty"] = difficulty;
     }
 
-    const quizzes = await Quiz.find(matchCriteria)
-      .populate("teacherId", "name profileImage")
-      .sort({ createdAt: -1 });
+    let quizzes;
+    if (role === "teacher") {
+      quizzes = await Quiz.find({
+        teacherId: userId,
+        ...matchCriteria,
+      })
+        .populate("teacherId", "name profileImage")
+        .populate("assignedStudentId", "name profileImage")
+        .sort({ createdAt: -1 });
+    } else {
+      quizzes = await Quiz.find({
+        ...matchCriteria,
+        $or: [{ assignedStudentId: null }, { assignedStudentId: userId }],
+      })
+        .populate("teacherId", "name profileImage")
+        .populate("assignedStudentId", "name profileImage")
+        .sort({ createdAt: -1 });
+    }
 
     return res
       .status(200)

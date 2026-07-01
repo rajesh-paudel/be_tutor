@@ -62,7 +62,6 @@ export const createBooking = async (req, res) => {
       endTime,
       subject,
       note,
-      meetingLink: `https://meet.jit.si/${teacherId}-${date}-${startTime.replace(":", "")}`, // Generates a reliable demo classroom link
     });
 
     return res.status(201).json({
@@ -107,6 +106,16 @@ export const updateBookingStatus = async (req, res) => {
       });
     }
 
+    if (
+      status === "accepted" &&
+      (!req.body.meetingLink || !req.body.meetingLink.trim())
+    ) {
+      return res.status(400).json({
+        success: false,
+        error: "A meeting link is required to accept the booking.",
+      });
+    }
+
     if (status === "completed" && booking.status !== "accepted") {
       return res.status(400).json({
         success: false,
@@ -134,6 +143,7 @@ export const updateBookingStatus = async (req, res) => {
             "Cannot accept. Parallel slot conflict has already been confirmed.",
         });
       }
+      booking.meetingLink = req.body.meetingLink.trim();
     }
 
     booking.status = status;
@@ -142,6 +152,48 @@ export const updateBookingStatus = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: `Booking has been successfully ${status}.`,
+      data: booking,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// @desc    Cancel a pending booking request as the requesting student
+// @route   DELETE /api/bookings/:id
+// @access  Private (Student Only)
+export const cancelBooking = async (req, res) => {
+  try {
+    const studentId = req.user._id;
+    const bookingId = req.params.id;
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Booking entry not found." });
+    }
+
+    if (booking.studentId.toString() !== studentId.toString()) {
+      return res.status(403).json({
+        success: false,
+        error: "Access denied. You cannot cancel this booking.",
+      });
+    }
+
+    if (booking.status !== "pending") {
+      return res.status(400).json({
+        success: false,
+        error: "Only pending bookings can be canceled.",
+      });
+    }
+
+    booking.status = "cancelled";
+    await booking.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Booking request canceled.",
       data: booking,
     });
   } catch (error) {

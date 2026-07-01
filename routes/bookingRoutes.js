@@ -5,6 +5,7 @@ import {
   createBooking,
   updateBookingStatus,
   getUserBookings,
+  cancelBooking,
 } from "../controller/bookingController.js";
 const router = express.Router();
 
@@ -16,5 +17,8 @@ router.post("/", verifyTokenAndRole(["student"]), createBooking);
 
 // 3. Confirm/Deny slot requests (Protected: Teacher Only)
 router.put("/:id/status", verifyTokenAndRole(["teacher"]), updateBookingStatus);
+
+// 4. Cancel a pending booking request (Protected: Student Only)
+router.delete("/:id", verifyTokenAndRole(["student"]), cancelBooking);
 
 export default router;

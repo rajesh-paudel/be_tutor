@@ -16,6 +16,7 @@ export const createAssignment = async (req, res) => {
 
     const assignment = await Assignment.create({
       teacherId,
+      assignedStudentId: req.body.assignedStudentId || null,
       title,
       instructions,
       subject,
@@ -159,16 +160,15 @@ export const getAssignments = async (req, res) => {
     let assignments = [];
 
     if (role === "teacher") {
-      assignments = await Assignment.find({ teacherId: userId }).populate(
-        "submissions.studentId",
-        "name email",
-      );
+      assignments = await Assignment.find({ teacherId: userId })
+        .populate("submissions.studentId", "name email")
+        .populate("assignedStudentId", "name profileImage");
     } else if (role === "student") {
-      // Find all assignments, populated with sub-document references
-      assignments = await Assignment.find().populate(
-        "teacherId",
-        "name profileImage",
-      );
+      assignments = await Assignment.find({
+        $or: [{ assignedStudentId: null }, { assignedStudentId: userId }],
+      })
+        .populate("teacherId", "name profileImage")
+        .populate("assignedStudentId", "name profileImage");
     }
 
     return res
